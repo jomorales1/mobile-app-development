@@ -13,11 +13,17 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private TicTacToeGame game;
     // Buttons making up the board
-    private Button mBoardButtons[];
+    private Button[] mBoardButtons;
     // Various text displayed
     private TextView mInfoTextView;
+    private TextView mHumanWinsTextView;
+    private TextView mTiesTextView;
+    private TextView mAndroidWinsTextView;
 
     private boolean mGameOver = false;
+    private int human_wins = 0;
+    private int ties = 0;
+    private int android_wins = 0;
 
     // Handles clicks on the game board buttons
     private class ButtonClickListener implements View.OnClickListener {
@@ -39,14 +45,22 @@ public class MainActivity extends AppCompatActivity {
                 if (winner != 0) {
                     mGameOver = true;
                 }
-                if (winner == 0)
+                if (winner == 0) {
                     mInfoTextView.setText(R.string.turn_human);
-                else if (winner == 1)
+
+                } else if (winner == 1) {
                     mInfoTextView.setText(R.string.result_tie);
-                else if (winner == 2)
+                    ties += 1;
+                    mTiesTextView.setText("Ties: " + ties);
+                } else if (winner == 2) {
                     mInfoTextView.setText(R.string.result_human_wins);
-                else
+                    human_wins += 1;
+                    mHumanWinsTextView.setText("Human: " + human_wins);
+                } else {
                     mInfoTextView.setText(R.string.result_computer_wins);
+                    android_wins += 1;
+                    mAndroidWinsTextView.setText("Android: " + android_wins);
+                }
             }
         }
     }
@@ -67,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
         mBoardButtons[7] = (Button) findViewById(R.id.eight);
         mBoardButtons[8] = (Button) findViewById(R.id.nine);
         mInfoTextView = (TextView) findViewById(R.id.information);
+        mHumanWinsTextView = (TextView) findViewById(R.id.human_wins);
+        mTiesTextView = (TextView) findViewById(R.id.ties);
+        mAndroidWinsTextView = (TextView) findViewById(R.id.android_wins);
         game = new TicTacToeGame();
 
         startNewGame();
@@ -82,7 +99,14 @@ public class MainActivity extends AppCompatActivity {
             mBoardButtons[i].setOnClickListener(new ButtonClickListener(i));
         }
         // Human goes first
-        mInfoTextView.setText(R.string.first_human);
+        if (Math.random() <= 0.5) {
+            mInfoTextView.setText(R.string.first_human);
+        } else {
+            mInfoTextView.setText(R.string.turn_computer);
+            int move = game.getComputerMove();
+            setMove(TicTacToeGame.COMPUTER_PLAYER, move);
+            mInfoTextView.setText(R.string.turn_human);
+        }
     }
 
     private void setMove(char player, int location) {
