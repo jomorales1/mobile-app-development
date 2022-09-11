@@ -77,7 +77,9 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    setMove(TicTacToeGame.COMPUTER_PLAYER, move);
+                    if (game.setMove(TicTacToeGame.COMPUTER_PLAYER, move)) {
+                        mBoardView.invalidate(); // Redraw the board
+                    }
                     mComputerMediaPlayer.start();
                     mInfoTextView.setText(R.string.turn_human);
                     humanTurn = true;
@@ -183,7 +185,10 @@ public class MainActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                setMove(TicTacToeGame.COMPUTER_PLAYER, move);
+                                // setMove(TicTacToeGame.COMPUTER_PLAYER, move);
+                                if (game.setMove(TicTacToeGame.COMPUTER_PLAYER, move)) {
+                                    mBoardView.invalidate(); // Redraw the board
+                                }
                                 mComputerMediaPlayer.start();
                                 humanTurn = true;
                                 int winner = game.checkForWinner();
