@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "789096575501",
+    "firebase_url": "https://tictactoe-a6935-default-rtdb.firebaseio.com",
+    "project_id": "tictactoe-a6935",
+    "storage_bucket": "tictactoe-a6935.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789096575501:android:4f7f2fdcd2fb7821a11b44",
+        "android_client_info": {
+          "package_name": "com.example.graphicsandsound"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789096575501-b9s6sk6ecnd9rtc6qop1dkh9g4jur3fd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrLj9p3Vh0rTAKovfs2XfPe7CcvJkiqnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789096575501-b9s6sk6ecnd9rtc6qop1dkh9g4jur3fd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
