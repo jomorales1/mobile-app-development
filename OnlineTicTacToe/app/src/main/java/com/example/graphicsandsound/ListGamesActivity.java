@@ -1,9 +1,11 @@
 package com.example.graphicsandsound;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,7 +25,10 @@ public class ListGamesActivity extends AppCompatActivity {
     ListView listView;
     Button bReturn;
     DatabaseReference reference;
+    DatabaseReference selectReference;
+    DatabaseReference gameReference;
     ArrayList<String> games = new ArrayList<>();
+    String gameSelected = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +36,33 @@ public class ListGamesActivity extends AppCompatActivity {
         setContentView(R.layout.list_games);
 
         listView = findViewById(R.id.games_list);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                gameSelected = games.get(i);
+                gameReference = FirebaseDatabase.getInstance().getReference("games/" + gameSelected + "/second_player");
+                gameReference.setValue("joined");
+                SharedPreferences preferences = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("currentGame", gameSelected);
+                editor.putBoolean("host", false);
+                editor.apply();
+                selectReference = FirebaseDatabase.getInstance().getReference("games/" + gameSelected + "/state");
+                addEventListener();
+                selectReference.setValue("ready");
+            }
+        });
         bReturn = findViewById(R.id.go_back3);
-        reference = FirebaseDatabase.getInstance().getReference("available");
+        reference = FirebaseDatabase.getInstance().getReference("games");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 games.clear();
                 Iterable<DataSnapshot> availableGames = snapshot.getChildren();
                 for (DataSnapshot data : availableGames) {
-                    games.add(data.getKey());
+                    if (data.child("state").getValue().toString().equals("created")) {
+                        games.add(data.getKey());
+                    }
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(ListGamesActivity.this,
                         android.R.layout.simple_list_item_1, games);
@@ -59,6 +82,21 @@ public class ListGamesActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
+            }
+        });
+    }
+
+    private void addEventListener() {
+        selectReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                startActivity(new Intent(getApplicationContext(), OnlineActivity.class));
+                finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("firebase", "loadPost:onCancelled", error.toException());
             }
         });
     }

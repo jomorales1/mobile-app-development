@@ -28,6 +28,7 @@ public class CreateGameActivity extends AppCompatActivity {
     Button submitName;
     Button bReturn;
     DatabaseReference reference;
+    DatabaseReference secondReference;
     String gameName = "";
 
     @Override
@@ -57,28 +58,16 @@ public class CreateGameActivity extends AppCompatActivity {
                 gameName = editText.getText().toString();
                 editText.setText("");
                 if (!gameName.isEmpty()) {
-                    reference = FirebaseDatabase.getInstance().getReference("available/" + gameName);
-                    addEventListener();
-                    reference.setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    // Write was successful!
-                                    // ...
-                                    Log.i("firebase" , "done");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Write failed see log for details
-                                    Log.i("firebase" , "e : " + e );
-                                }
-                            });
-                    SharedPreferences preferences = getSharedPreferences("PREFS", 0);
+                    reference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/state");
+                    secondReference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/second_player");
+                    secondReference.setValue("pending");
+                    SharedPreferences preferences = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("currentGame", gameName);
-                    editor.putBoolean("created", true);
+                    editor.putBoolean("host", true);
                     editor.apply();
+                    addEventListener();
+                    reference.setValue("created");
                 }
             }
         });
