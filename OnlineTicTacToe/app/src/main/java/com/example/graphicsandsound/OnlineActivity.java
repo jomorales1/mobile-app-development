@@ -146,6 +146,8 @@ public class OnlineActivity extends AppCompatActivity {
                             }
                         } else if (next.equals("second") && !host && !snapshot.child("host_move").exists() && !snapshot.child("second_move").exists()) {
                             mInfoTextView.setText(R.string.turn_human);
+                        } else if (next.equals("host") && !snapshot.child("host_move").exists() && !snapshot.child("second_move").exists()) {
+                            mInfoTextView.setText(R.string.turn_splayer);
                         }
                     }
                 }
