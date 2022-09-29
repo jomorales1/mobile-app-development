@@ -51,6 +51,13 @@ public class TicTacToeGame {
         return false;
     }
 
+    public boolean freeCell(int location) {
+        if (mBoard[location] != HUMAN_PLAYER && mBoard[location] != COMPUTER_PLAYER) {
+            return true;
+        }
+        return false;
+    }
+
     private void displayBoard()	{
         System.out.println();
         System.out.println(mBoard[0] + " | " + mBoard[1] + " | " + mBoard[2]);

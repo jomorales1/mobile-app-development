@@ -22,10 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.graphicsandsound.OfflineActivity"></activity>
-        <activity android:name="com.example.graphicsandsound.CreateGameActivity"></activity>
-        <activity android:name="com.example.graphicsandsound.ListGamesActivity"></activity>
-        <activity android:name="com.example.graphicsandsound.OnlineActivity"></activity>
+        <activity android:name="com.example.graphicsandsound.OfflineActivity" />
+        <activity android:name="com.example.graphicsandsound.CreateGameActivity" />
+        <activity android:name="com.example.graphicsandsound.ListGamesActivity" />
+        <activity android:name="com.example.graphicsandsound.OnlineActivity" />
     </application>
 
 </manifest>

@@ -26,7 +26,7 @@ public class ListGamesActivity extends AppCompatActivity {
     Button bReturn;
     DatabaseReference reference;
     DatabaseReference selectReference;
-    DatabaseReference gameReference;
+//    DatabaseReference gameReference;
     ArrayList<String> games = new ArrayList<>();
     String gameSelected = "";
 
@@ -40,16 +40,17 @@ public class ListGamesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 gameSelected = games.get(i);
-                gameReference = FirebaseDatabase.getInstance().getReference("games/" + gameSelected + "/second_player");
-                gameReference.setValue("joined");
+//                gameReference = FirebaseDatabase.getInstance().getReference("games/" + gameSelected + "/second_player");
+//                gameReference.setValue("joined");
                 SharedPreferences preferences = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("currentGame", gameSelected);
                 editor.putBoolean("host", false);
                 editor.apply();
                 selectReference = FirebaseDatabase.getInstance().getReference("games/" + gameSelected + "/state");
-                addEventListener();
                 selectReference.setValue("ready");
+                startActivity(new Intent(getApplicationContext(), OnlineActivity.class));
+                finish();
             }
         });
         bReturn = findViewById(R.id.go_back3);
@@ -60,6 +61,7 @@ public class ListGamesActivity extends AppCompatActivity {
                 games.clear();
                 Iterable<DataSnapshot> availableGames = snapshot.getChildren();
                 for (DataSnapshot data : availableGames) {
+                    System.out.println(data.getValue().toString());
                     if (data.child("state").getValue().toString().equals("created")) {
                         games.add(data.getKey());
                     }
@@ -82,21 +84,6 @@ public class ListGamesActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
-            }
-        });
-    }
-
-    private void addEventListener() {
-        selectReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                startActivity(new Intent(getApplicationContext(), OnlineActivity.class));
-                finish();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("firebase", "loadPost:onCancelled", error.toException());
             }
         });
     }

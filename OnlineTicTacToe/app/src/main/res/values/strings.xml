@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Orientation And State</string>
+    <string name="app_name">Online TicTacToe</string>
     <string name="first_human">You go first.</string>
     <string name="turn_human">Your turn.</string>
     <string name="turn_computer">Android\'s turn.</string>

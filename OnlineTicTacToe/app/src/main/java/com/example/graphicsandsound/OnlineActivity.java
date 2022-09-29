@@ -45,6 +45,7 @@ public class OnlineActivity extends AppCompatActivity {
 
     private boolean mGameOver = false;
     private String next = "";
+    private boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +53,16 @@ public class OnlineActivity extends AppCompatActivity {
         setContentView(R.layout.online_game);
         mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
         host = mPrefs.getBoolean("host", false);
+        gameName = mPrefs.getString("currentGame", "");
+
+        reference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/state");
 
         mReturn = findViewById(R.id.go_back4);
         mReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/state");
-                addEventListener();
                 if (!mGameOver) {
                     reference.setValue("canceled");
-                } else {
-                    reference.setValue("completed");
                 }
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
@@ -90,12 +90,43 @@ public class OnlineActivity extends AppCompatActivity {
                             gameReference.child("state").setValue("started");
                         } else if (snapshot.child("state").getValue().toString().equals("started")) {
                             next = (String) snapshot.child("next").getValue();
-                            if (next.equals("host")) {
-                                Integer secondMove = (Integer) snapshot.child("second_move").getValue();
-                                if (game.setMove(TicTacToeGame.COMPUTER_PLAYER, secondMove)) {
+                            if (next.equals("host") && snapshot.child("second_move").exists()) {
+                                Long data = (Long) snapshot.child("second_move").getValue();
+                                Integer secondMove = data.intValue();
+                                if (game.freeCell(secondMove)) {
+                                    if (game.setMove(TicTacToeGame.COMPUTER_PLAYER, secondMove)) {
+                                        mBoardView.invalidate(); // Redraw the board
+                                    }
+                                    mSPlayerMediaPlayer.start();
+                                    int winner = game.checkForWinner();
+                                    if (winner != 0) {
+                                        mGameOver = true;
+                                    }
+                                    if (winner == 0) {
+                                        mInfoTextView.setText(R.string.turn_human);
+                                    } else if (winner == 1) {
+                                        mInfoTextView.setText(R.string.result_tie);
+                                    } else if (winner == 2) {
+                                        mInfoTextView.setText(R.string.result_human_wins);
+                                    } else {
+                                        mInfoTextView.setText(R.string.result_splayer_wins);
+                                    }
+                                    if (winner != 0) {
+                                        gameReference.child("state").setValue("finished");
+                                    }
+                                }
+                            }
+                        }
+                    } else if (snapshot.child("state").getValue().toString().equals("started")) {
+                        next = (String) snapshot.child("next").getValue();
+                        if (next.equals("second") && snapshot.child("host_move").exists()) {
+                            Long data = (Long) snapshot.child("host_move").getValue();
+                            Integer hostMove = data.intValue();
+                            if (game.freeCell(hostMove)) {
+                                if (game.setMove(TicTacToeGame.HUMAN_PLAYER, hostMove)) {
                                     mBoardView.invalidate(); // Redraw the board
                                 }
-                                mSPlayerMediaPlayer.start();
+                                mHostMediaPlayer.start();
                                 int winner = game.checkForWinner();
                                 if (winner != 0) {
                                     mGameOver = true;
@@ -105,39 +136,16 @@ public class OnlineActivity extends AppCompatActivity {
                                 } else if (winner == 1) {
                                     mInfoTextView.setText(R.string.result_tie);
                                 } else if (winner == 2) {
-                                    mInfoTextView.setText(R.string.result_human_wins);
+                                    mInfoTextView.setText(R.string.result_host_wins);
                                 } else {
-                                    mInfoTextView.setText(R.string.result_splayer_wins);
+                                    mInfoTextView.setText(R.string.result_human_wins);
                                 }
                                 if (winner != 0) {
                                     gameReference.child("state").setValue("finished");
                                 }
                             }
-                        }
-                    } else if (snapshot.child("state").getValue().toString().equals("started")) {
-                        next = (String) snapshot.child("next").getValue();
-                        if (next.equals("second")) {
-                            Integer hostMove = (Integer) snapshot.child("host_move").getValue();
-                            if (game.setMove(TicTacToeGame.HUMAN_PLAYER, hostMove)) {
-                                mBoardView.invalidate(); // Redraw the board
-                            }
-                            mHostMediaPlayer.start();
-                            int winner = game.checkForWinner();
-                            if (winner != 0) {
-                                mGameOver = true;
-                            }
-                            if (winner == 0) {
-                                mInfoTextView.setText(R.string.turn_human);
-                            } else if (winner == 1) {
-                                mInfoTextView.setText(R.string.result_tie);
-                            } else if (winner == 2) {
-                                mInfoTextView.setText(R.string.result_host_wins);
-                            } else {
-                                mInfoTextView.setText(R.string.result_human_wins);
-                            }
-                            if (winner != 0) {
-                                gameReference.child("state").setValue("finished");
-                            }
+                        } else if (next.equals("second") && !host && !snapshot.child("host_move").exists() && !snapshot.child("second_move").exists()) {
+                            mInfoTextView.setText(R.string.turn_human);
                         }
                     }
                 }
@@ -159,11 +167,9 @@ public class OnlineActivity extends AppCompatActivity {
         if (Math.random() <= 0.5) {
             mInfoTextView.setText(R.string.first_human);
             gameReference.child("next").setValue("host");
-            gameReference.child("host_move").setValue(-1);
         } else {
             mInfoTextView.setText(R.string.turn_splayer);
             gameReference.child("next").setValue("second");
-            gameReference.child("second_move").setValue(-1);
         }
     }
 
@@ -191,7 +197,9 @@ public class OnlineActivity extends AppCompatActivity {
                     if (winner != 0) {
                         mGameOver = true;
                     }
-                    if (winner == 1) {
+                    if (winner == 0) {
+                        mInfoTextView.setText(R.string.turn_splayer);
+                    } else if (winner == 1) {
                         mInfoTextView.setText(R.string.result_tie);
                     } else if (winner == 2) {
                         mInfoTextView.setText(R.string.result_human_wins);
@@ -213,7 +221,9 @@ public class OnlineActivity extends AppCompatActivity {
                     if (winner != 0) {
                         mGameOver = true;
                     }
-                    if (winner == 1) {
+                    if (winner == 0) {
+                        mInfoTextView.setText(R.string.turn_splayer);
+                    } else if (winner == 1) {
                         mInfoTextView.setText(R.string.result_tie);
                     } else if (winner == 2) {
                         mInfoTextView.setText(R.string.result_host_wins);
@@ -258,20 +268,5 @@ public class OnlineActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    private void addEventListener() {
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                startActivity(new Intent(getApplicationContext(), OnlineActivity.class));
-                finish();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("firebase", "loadPost:onCancelled", error.toException());
-            }
-        });
     }
 }

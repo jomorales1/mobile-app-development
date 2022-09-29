@@ -28,7 +28,7 @@ public class CreateGameActivity extends AppCompatActivity {
     Button submitName;
     Button bReturn;
     DatabaseReference reference;
-    DatabaseReference secondReference;
+//    DatabaseReference secondReference;
     String gameName = "";
 
     @Override
@@ -59,15 +59,16 @@ public class CreateGameActivity extends AppCompatActivity {
                 editText.setText("");
                 if (!gameName.isEmpty()) {
                     reference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/state");
-                    secondReference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/second_player");
-                    secondReference.setValue("pending");
+//                    secondReference = FirebaseDatabase.getInstance().getReference("games/" + gameName + "/second_player");
+//                    secondReference.setValue("pending");
                     SharedPreferences preferences = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("currentGame", gameName);
                     editor.putBoolean("host", true);
                     editor.apply();
-                    addEventListener();
                     reference.setValue("created");
+                    startActivity(new Intent(getApplicationContext(), OnlineActivity.class));
+                    finish();
                 }
             }
         });
@@ -76,20 +77,6 @@ public class CreateGameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
-            }
-        });
-    }
-    private void addEventListener() {
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                startActivity(new Intent(getApplicationContext(), OnlineActivity.class));
-                finish();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("firebase", "loadPost:onCancelled", error.toException());
             }
         });
     }
