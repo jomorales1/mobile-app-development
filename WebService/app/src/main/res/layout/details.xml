@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Details">
+
+    <TextView
+        android:id="@+id/details_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Detalles"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"/>
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1"
+        android:layout_below="@+id/details_title"
+        android:layout_marginTop="20dp">
+        <TableRow>
+            <TextView
+                android:id="@+id/name_label"
+                android:text="Nombre de activo"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/name"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/os_label"
+                android:text="Sistema Operativo"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/os"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/ram_label"
+                android:text="Memoria RAM (GB)"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/ram"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/storage_label"
+                android:text="Disco Duro (GB)"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/storage"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/type_label"
+                android:text="Tipo de activo"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/type"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/speed_label"
+                android:text="Velocidad"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/speed"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/brand_label"
+                android:text="Marca y modelo"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/brand"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/availability_label"
+                android:text="Disponibilidad"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/availability"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/value_label"
+                android:text="Valor"
+                android:textStyle="bold"
+                android:padding="3dip" />
+            <TextView
+                android:id="@+id/value"
+                android:text=""
+                android:padding="3dip" />
+        </TableRow>
+    </TableLayout>
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Volver"
+        android:layout_below="@id/table"
+        android:layout_marginTop="20dp"
+        android:gravity="center"/>
+
+</RelativeLayout>
